@@ -1,5 +1,5 @@
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
-    username TEXT NOT NULL UNIQUE,
+    username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL
 );

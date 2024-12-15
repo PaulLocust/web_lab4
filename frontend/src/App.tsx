@@ -1,35 +1,74 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {useState} from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const handleRegister = async () => {
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+
+            // Проверка на успешный ответ
+            if (!response.ok) {
+                const errorData = await response.json(); // Получаем ошибку как JSON
+                setMessage(errorData.message || 'Error');
+                return;
+            }
+
+            const data = await response.json();
+            setMessage(data.message || 'Registration successful');
+        } catch (error) {
+            setMessage('Network error');
+        }
+    };
+
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+
+            // Проверка на успешный ответ
+            if (!response.ok) {
+                const errorData = await response.json(); // Получаем ошибку как JSON
+                setMessage(errorData.message || 'Error');
+                return;
+            }
+
+            const data = await response.json();
+            setMessage(data.message || 'Login successful');
+        } catch (error) {
+            setMessage('Network error');
+        }
+    };
+
+    return (
+        <div>
+            <h1>User Authentication</h1>
+            <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
+            <button onClick={handleRegister}>Register</button>
+            <button onClick={handleLogin}>Login</button>
+            {message && <p>{message}</p>}
+        </div>
+    );
 }
 
-export default App
+export default App;
