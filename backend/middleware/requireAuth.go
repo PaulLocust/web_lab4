@@ -20,8 +20,6 @@ func RequireAuth(c *gin.Context) {
 	}
 
 	// Decode/validate it
-
-	// Parse takes the token string and a function for looking up the key.
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

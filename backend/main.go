@@ -18,10 +18,13 @@ func init() {
 func main() {
 
 	r := gin.Default()
+	authorized := r.Group("/api")
+	authorized.Use(middleware.RequireAuth)
 
 	r.POST("/signup", controllers.Signup)
 	r.POST("/login", controllers.Login)
-	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
+	authorized.GET("/validate", controllers.Validate)
+	authorized.POST("/check-point", controllers.CheckPoint)
 
 	r.Run()
 

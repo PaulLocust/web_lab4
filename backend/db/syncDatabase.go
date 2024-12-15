@@ -5,8 +5,9 @@ import (
 )
 
 func SyncDatabase() {
-	err := DBCon.AutoMigrate(&models.User{})
+	err := DBCon.AutoMigrate(&models.User{}, &models.Point{})
 	if err != nil {
 		return
 	}
+
 }
