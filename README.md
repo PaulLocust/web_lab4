@@ -4,8 +4,6 @@
 - Gin - (backend) веб-фреймворк на Go 
 - GORM(ORM) - PostgreSQL
 - JSON Web Tokens (JWT) для защиты данных
-- golang-migrate - миграции для базы данных
-- Makefile для простоты запроса миграций
 
 
 - React - (frontend)

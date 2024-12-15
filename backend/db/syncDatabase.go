@@ -1,10 +1,12 @@
 package db
 
 import (
-	"gorm.io/gorm"
 	"web_lab4/backend/models"
 )
 
-func SyncDatabase(dbCon *gorm.DB) {
-	dbCon.AutoMigrate(&models.User{})
+func SyncDatabase() {
+	err := DBCon.AutoMigrate(&models.User{})
+	if err != nil {
+		return
+	}
 }
