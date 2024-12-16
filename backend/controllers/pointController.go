@@ -2,21 +2,27 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"math"
 	"net/http"
 	"web_lab4/backend/db"
 	"web_lab4/backend/helpers"
 	"web_lab4/backend/models"
 )
 
+// Кастомная валидация для R (проверка, что R кратно 0.5)
+func customRValidation(fl validator.FieldLevel) bool {
+	r := fl.Field().Float()
+	return r >= 1 && r <= 3 && math.Mod(r, 0.5) == 0
+}
+
 func CheckPoint(c *gin.Context) {
 
-	// Get the x/y/r off req body
+	// Get the x/y/r from the req body
 	var body struct {
-		X      float64 `json:"x" binding:"gte=-5,lte=3"` // X должен быть в диапазоне [-5, 3]
-		Y      float64 `json:"y" binding:"gte=-3,lte=3"` // Y должен быть в диапазоне [-3, 3]
-		R      float64 `json:"r" binding:"gte=-5,lte=3"` // R должен быть в диапазоне [-5, 3]
-		Result bool    `json:"result"`
-		UserId int     `json:"userId"`
+		X float64 `json:"x" validate:"gte=-3,lte=3"`                  // X должен быть в диапазоне [-3, 3]
+		Y float64 `json:"y" validate:"gte=-5,lte=3"`                  // Y должен быть в диапазоне [-5, 3]
+		R float64 `json:"r" validate:"gte=1,lte=3,customRValidation"` // R должен быть в диапазоне [1, 3] и кратен 0.5
 	}
 
 	if c.Bind(&body) != nil {
@@ -27,24 +33,16 @@ func CheckPoint(c *gin.Context) {
 		return
 	}
 
-	// Check the point and set the result variable for body
-	body.Result = helpers.Hit(body.X, body.Y, body.R)
+	// Check the point
+	hitResult := helpers.Hit(body.X, body.Y, body.R)
 
+	// Get userId and set it to body
 	user, _ := c.Get("user")
-	if user == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return
-	}
+	currentUser := user.(models.User)
+	userId := int(currentUser.ID)
 
-	// Приводим интерфейс к нужному типу (models.User)
-	currentUser, ok := user.(models.User)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User type assertion failed"})
-		return
-	}
-	body.UserId = int(currentUser.ID)
-	// Create point
-	point := models.Point{X: body.X, Y: body.Y, R: body.R, Result: body.Result, UserId: body.UserId}
+	// Create point model
+	point := models.Point{X: body.X, Y: body.Y, R: body.R, Result: hitResult, UserId: userId}
 
 	result := db.DBCon.Create(&point)
 

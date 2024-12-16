@@ -1,0 +1,140 @@
+/* Обнуление и базовые стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+/* Заголовок */
+.header {
+    font-size: 16px;
+    text-align: center;
+    color: white;
+    background-color: black;
+    line-height: 55px;
+}
+
+.header-container {
+    display: grid;
+    grid-template-columns: 2fr 5fr 1fr 1fr;
+    width: calc(100% - 40px);
+    margin: auto;
+    height: 55px;
+}
+
+/* Основная сетка */
+.main {
+    display: grid;
+    grid-template-columns: 2fr 3fr; /* Левая колонка меньше правой */
+    height: calc(100vh - 55px);
+    width: 100vw;
+}
+
+.main > div {
+    border: 1px solid black;
+}
+
+/* Левая колонка */
+.main__left-column {
+    display: grid;
+    grid-template-rows: max-content max-content auto;
+}
+
+/* Блоки в левой колонке */
+.main__block {
+    margin: 15px 15px 0 15px;
+    border: 1px solid rgb(0, 0, 0);
+}
+
+.main__block .row {
+    margin: 10px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main__block .row > * {
+    margin: 0 5px;
+}
+
+/* График */
+.graph {
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    margin: 20px auto;
+    border: 1px solid black;
+}
+
+/* Поля ввода */
+.input {
+    height: 23px;
+    margin-left: 5px;
+}
+
+.spinner {
+    margin-left: 5px;
+}
+
+.submit_button {
+    background-color: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: black;
+}
+
+.submit_button:hover {
+    background-color: #f6f6f6;
+}
+
+.submit_button:active {
+    background-color: #000000;
+    color: #ffffff;
+}
+/* Правая колонка: таблица результатов */
+.result-title {
+    margin: 10px auto;
+    text-align: center;
+    font-size: 18px;
+}
+
+#result {
+    overflow-y: auto;
+    max-height: calc(100vh - 130px);
+    text-align: center;
+}
+
+.result-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+}
+
+.result-container > div {
+    padding: 5px;
+    box-shadow: 1px 1px 1px #000;
+}
+
+/* Цвета попадания */
+.hit {
+    color: green;
+}
+
+.miss {
+    color: red;
+}
+
+.graph {
+    display: block;
+    max-width: 50%; /* Адаптивная ширина */
+    height: auto; /* Сохраняет пропорции */
+    border: 1px solid black;
+    margin: 10px auto;
+}
