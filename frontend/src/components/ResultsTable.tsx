@@ -1,7 +1,7 @@
 // ResultsTable.tsx
 import React from "react";
 
-export interface Result { // Определяем и экспортируем интерфейс Result
+export interface Result {
     x: number;
     y: number;
     r: number;
@@ -9,31 +9,34 @@ export interface Result { // Определяем и экспортируем и
 }
 
 interface ResultsTableProps {
-    results: Result[]; // Используем интерфейс Result
+    results: Result[];
 }
 
 const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
     return (
-        <table>
-            <thead>
-            <tr>
-                <th>X</th>
-                <th>Y</th>
-                <th>R</th>
-                <th>Попадание</th>
-            </tr>
-            </thead>
-            <tbody>
-            {results.map((result, index) => (
-                <tr key={index}>
-                    <td>{result.x}</td>
-                    <td>{result.y}</td>
-                    <td>{result.r}</td>
-                    <td>{result.hit ? "Да" : "Нет"}</td>
+        <div>
+            <h3>Результаты</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>R</th>
+                    <th>Попадание</th>
                 </tr>
-            ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {results.map((result, index) => (
+                    <tr key={index}>
+                        <td>{result.x}</td>
+                        <td>{result.y}</td>
+                        <td>{result.r}</td>
+                        <td>{result.hit ? "Да" : "Нет"}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 

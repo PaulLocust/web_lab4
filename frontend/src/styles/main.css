@@ -66,11 +66,12 @@ html, body {
 /* График */
 .graph {
     display: block;
-    width: 100%;
-    max-width: 350px;
-    margin: 20px auto;
+    height: 350px;
+    width: 350px;
     border: 1px solid black;
+    margin: 20px auto;
 }
+
 
 /* Поля ввода */
 .input {

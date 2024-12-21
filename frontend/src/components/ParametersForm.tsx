@@ -1,6 +1,7 @@
+// ParametersForm.tsx
 import React, { useState } from "react";
-import { Result } from "./ResultsTable.tsx";
-import { checkPoint } from "./checkPointService.ts"; // Импортируем Result из ResultsTable
+import { Result } from "./ResultsTable";
+import { checkPoint } from "./checkPointService"; // Импортируем Result из ResultsTable
 
 interface FormProps {
     setResults: React.Dispatch<React.SetStateAction<Result[]>>;
@@ -42,7 +43,7 @@ const ParametersForm: React.FC<FormProps> = ({ setResults }) => {
             setResults(prevResults => [...prevResults, newPoint]); // Добавляем новую точку в результаты
         } catch (error) {
             console.error("Ошибка при отправке формы:", error);
-            // Обработайте ошибку (например, покажите сообщение пользователю)
+            setError("Произошла ошибка при отправке данных."); // Обработка ошибки
         }
     };
 

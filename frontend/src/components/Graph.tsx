@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Result } from "./ResultsTable"; // Импортируем интерфейс Result
 import { checkPoint } from "./checkPointService"; // Импортируем функцию проверки точки
+import graphSvg from "../assets/graph.svg"; // Импортируем SVG-файл
 
 interface GraphProps {
     results: Result[]; // Результаты для отображения на графике
@@ -72,7 +73,10 @@ const Graph: React.FC<GraphProps> = ({ results, setResults }) => {
     useEffect(() => {
         const svg = document.getElementById("graph-svg");
         if (svg) {
-            svg.innerHTML = ""; // Очищаем график перед перерисовкой
+            // Удаляем только точки из SVG
+            const points = svg.querySelectorAll("circle");
+            points.forEach(point => point.remove()); // Удаляем все точки
+
             if (results && Array.isArray(results)) {
                 results.forEach((result) => {
                     drawPoint(result.x, result.y, result.hit);
@@ -88,10 +92,14 @@ const Graph: React.FC<GraphProps> = ({ results, setResults }) => {
                 width="400"
                 height="400"
                 onClick={handleGraphClick}
-                style={{ border: "1px solid black" }}
+                style={{ position: "relative", cursor: "pointer", border: "1px solid black" }}
             >
-                <rect width="100%" height="100%" fill="white" />
-                {/* Здесь можно добавить дополнительные линии и метки для графика */}
+                <defs>
+                    <pattern id="graph-pattern" patternUnits="userSpaceOnUse" width="400" height="400">
+                        <image href={graphSvg} width="400" height="400" />
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#graph-pattern)" />
             </svg>
         </div>
     );
