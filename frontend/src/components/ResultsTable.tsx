@@ -1,45 +1,39 @@
+// ResultsTable.tsx
 import React from "react";
 
-interface Result {
+export interface Result { // Определяем и экспортируем интерфейс Result
     x: number;
     y: number;
     r: number;
     hit: boolean;
 }
 
-interface TableProps {
-    results: Result[];
+interface ResultsTableProps {
+    results: Result[]; // Используем интерфейс Result
 }
 
-const ResultsTable: React.FC<TableProps> = ({ results }) => {
+const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
     return (
-        <div className="main__block">
-            <h3 className="result-title">Результат</h3>
-            <div id="result">
-                <table style={{ width: "100%", textAlign: "center" }}>
-                    <thead>
-                    <tr>
-                        <th>X</th>
-                        <th>Y</th>
-                        <th>R</th>
-                        <th>Попал?</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {results.map((res, index) => (
-                        <tr key={index}>
-                            <td>{res.x}</td>
-                            <td>{res.y}</td>
-                            <td>{res.r}</td>
-                            <td style={{ color: res.hit ? "green" : "red" }}>
-                                {res.hit ? "Да" : "Нет"}
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>X</th>
+                <th>Y</th>
+                <th>R</th>
+                <th>Попадание</th>
+            </tr>
+            </thead>
+            <tbody>
+            {results.map((result, index) => (
+                <tr key={index}>
+                    <td>{result.x}</td>
+                    <td>{result.y}</td>
+                    <td>{result.r}</td>
+                    <td>{result.hit ? "Да" : "Нет"}</td>
+                </tr>
+            ))}
+            </tbody>
+        </table>
     );
 };
 

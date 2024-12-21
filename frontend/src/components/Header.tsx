@@ -1,14 +1,18 @@
 import React from "react";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+    onLogout?: () => void; // Сделаем функцию необязательной
+    showLogout?: boolean; // Пропс для отображения кнопки выхода
+}
+
+const Header: React.FC<HeaderProps> = ({ onLogout, showLogout }) => {
     return (
         <header className="header">
             <div className="header-container">
-                <div>Саранча Павел Александрович Р3209</div>
-                <div></div>
-                <div>
-                    <a href="/" style={{ color: "purple" }}>Вернуться</a>
-                </div>
+                <div>Саранча Павел Александрович P3209</div>
+                {showLogout && onLogout && ( // Отображаем кнопку только если showLogout true и onLogout передан
+                    <button onClick={onLogout}>Выйти</button>
+                )}
             </div>
         </header>
     );

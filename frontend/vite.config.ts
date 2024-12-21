@@ -1,10 +1,26 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
+
 export default defineConfig({
+  plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:8080', // API Gin
+      "/signup": {
+        target: "http://localhost:3000", // Сервер Gin
+        changeOrigin: true,
+        secure: false,
+      },
+      "/login": {
+        target: "http://localhost:3000", // Сервер Gin
+        changeOrigin: true,
+        secure: false,
+      },
+      "/api": {
+        target: "http://localhost:3000", // Для всех других API маршрутов
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
