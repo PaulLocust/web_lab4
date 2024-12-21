@@ -1,16 +1,16 @@
-// ParametersForm.tsx
 import React, { useState } from "react";
 import { Result } from "./ResultsTable";
 import { checkPoint } from "./checkPointService"; // Импортируем Result из ResultsTable
 
 interface FormProps {
     setResults: React.Dispatch<React.SetStateAction<Result[]>>;
+    setR: React.Dispatch<React.SetStateAction<number>>; // Добавляем setR как пропс
 }
 
-const ParametersForm: React.FC<FormProps> = ({ setResults }) => {
+const ParametersForm: React.FC<FormProps> = ({ setResults, setR }) => {
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
-    const [r, setR] = useState(1);
+    const [r, setLocalR] = useState(1); // Локальное состояние для R
     const [error, setError] = useState<string | null>(null); // Состояние для хранения сообщения об ошибке
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -47,6 +47,11 @@ const ParametersForm: React.FC<FormProps> = ({ setResults }) => {
         }
     };
 
+    const handleRChange = (value: number) => {
+        setLocalR(value); // Обновляем локальное состояние для R
+        setR(value); // Обновляем состояние R в родительском компоненте
+    };
+
     return (
         <form onSubmit={handleSubmit}>
             <h3>Параметры</h3>
@@ -59,7 +64,7 @@ const ParametersForm: React.FC<FormProps> = ({ setResults }) => {
                     onChange={(e) => setX(Number(e.target.value))}
                     min="-3"
                     max="3"
-                    step="0.1" // Добавляем шаг для более точного ввода
+                    step="0.0001" // Добавляем шаг для более точного ввода
                 />
             </div>
             <div>
@@ -70,7 +75,7 @@ const ParametersForm: React.FC<FormProps> = ({ setResults }) => {
                     onChange={(e) => setY(Number(e.target.value))}
                     min="-5"
                     max="3"
-                    step="0.1" // Добавляем шаг для более точного ввода
+                    step="0.0001" // Добавляем шаг для более точного ввода
                 />
             </div>
             <div>
@@ -81,7 +86,7 @@ const ParametersForm: React.FC<FormProps> = ({ setResults }) => {
                             type="radio"
                             value={value}
                             checked={r === value}
-                            onChange={() => setR(value)}
+                            onChange={() => handleRChange(value)} // Обновляем значение R
                         />
                         {value}
                     </label>

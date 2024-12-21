@@ -1,94 +1,114 @@
-import React, { useEffect, useState } from "react";
-import { Result } from "./ResultsTable"; // Импортируем интерфейс Result
-import { checkPoint } from "./checkPointService"; // Импортируем функцию проверки точки
-import graphSvg from "../assets/graph.svg"; // Импортируем SVG-файл
+import React, { useEffect, useRef } from "react";
+import { Result } from "./ResultsTable"; // Importing the Result interface
+import { checkPoint } from "./checkPointService"; // Importing the function to check point validity
+import graphSvg from "../assets/graph.svg"; // Importing the SVG file for background
 
 interface GraphProps {
-    results: Result[]; // Результаты для отображения на графике
-    setResults: React.Dispatch<React.SetStateAction<Result[]>>; // Функция для обновления результатов
+    results: Result[]; // Array of results to display on the graph
+    setResults: React.Dispatch<React.SetStateAction<Result[]>>; // Function to update results
+    r: number; // Value of R passed as a prop
 }
 
-const Graph: React.FC<GraphProps> = ({ results, setResults }) => {
-    const [r] = useState(1); // Значение R по умолчанию
+const Graph: React.FC<GraphProps> = ({ results, setResults, r }) => {
+    const svgRef = useRef<SVGSVGElement | null>(null); // Reference for the SVG element
 
+    // Function to draw a point on the graph
     const drawPoint = (x: number, y: number, hit: boolean) => {
-        const svg = document.getElementById("graph-svg");
-        if (svg) {
+        if (svgRef.current) {
             const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", (x * 170) / r + 200 + "px");
-            circle.setAttribute("cy", (-y * 170) / r + 200 + "px");
-            circle.setAttribute("r", "4");
-            circle.style.fill = hit ? "#0ecc14" : "#d1220f"; // Зеленый для попадания, красный для промаха
-            circle.style.stroke = "black";
-            circle.style.strokeWidth = "1px";
-            svg.appendChild(circle);
+
+            // Transform coordinates
+            const svgWidth = 400; // Width of the graph
+            const svgHeight = 400; // Height of the graph
+            const centerX = svgWidth / 2; // Center X
+            const centerY = svgHeight / 2; // Center Y
+
+            // Scale coordinates
+            const scaledX = (x / r) * (svgWidth / 2) + centerX; // Transform x
+            const scaledY = (-y / r) * (svgHeight / 2) + centerY; // Transform y, invert Y
+
+            circle.setAttribute("cx", `${scaledX}`); // Set X coordinate
+            circle.setAttribute("cy", `${scaledY}`); // Set Y coordinate
+            circle.setAttribute("r", "4"); // Set radius
+            circle.style.fill = hit ? "#0ecc14" : "#d1220f"; // Green for hit, red for miss
+            circle.style.stroke = "black"; // Stroke color
+            circle.style.strokeWidth = "1px"; // Stroke width
+            svgRef.current.appendChild(circle); // Add circle to SVG
         }
     };
 
+    // Function to handle clicks on the graph
     const handleGraphClick = async (e: React.MouseEvent<SVGSVGElement>) => {
-        const rect = (e.target as SVGSVGElement).getBoundingClientRect();
-        const xValue = ((e.clientX - rect.left - rect.width / 2) / 135) * r;
-        const yValue = ((rect.height / 2 - (e.clientY - rect.top)) / 135) * r;
+        if (svgRef.current) {
+            const rect = svgRef.current.getBoundingClientRect();
+            const svgWidth = rect.width;
+            const svgHeight = rect.height;
 
-        const validation = checkData(xValue, yValue, r);
-        if (!validation.isValid) {
-            alert(validation.reason);
-            return;
-        }
+            // Calculate coordinates relative to the center of the SVG
+            const xValue = ((e.clientX - rect.left) - svgWidth / 2) / (svgWidth / 2) * r;
+            const yValue = (svgHeight / 2 - (e.clientY - rect.top)) / (svgHeight / 2) * r;
 
-        try {
-            const response = await checkPoint({ x: xValue, y: yValue, r });
-            const newPoint: Result = {
-                x: xValue,
-                y: yValue,
-                r,
-                hit: response.data.result,
-            };
-            setResults((prevResults) => [...prevResults, newPoint]);
-            drawPoint(xValue, yValue, response.data.result);
-        } catch (error) {
-            console.error("Ошибка при отправке данных:", error);
+            // Validate the coordinates
+            const validation = checkData(xValue, yValue, r);
+            if (!validation.isValid) {
+                alert(validation.reason);
+                return;
+            }
+
+            try {
+                const response = await checkPoint({ x: xValue, y: yValue, r });
+                const newPoint: Result = {
+                    x: xValue,
+                    y: yValue,
+                    r,
+                    hit: response.data.result,
+                };
+                setResults((prevResults) => [...prevResults, newPoint]); // Update results
+                drawPoint(xValue, yValue, response.data.result); // Draw the point
+            } catch (error) {
+                console.error("Error while sending data:", error);
+            }
+        } else {
+            console.error("Failed to get SVG element");
         }
     };
 
+    // Function to validate the data
     const checkData = (x: number, y: number, r: number) => {
-        let resp = { isValid: true, reason: "Корректные данные" };
+        let resp = { isValid: true, reason: "Valid data" };
 
         if (isNaN(x) || isNaN(y) || isNaN(r)) {
             resp.isValid = false;
-            resp.reason = "Невалидные данные";
+            resp.reason = "Invalid data";
         }
         if (y < -5) {
             resp.isValid = false;
-            resp.reason = `Y должен быть больше или равен -5 (Y=${y})`;
+            resp.reason = `Y must be greater than or equal to -5 (Y=${y})`;
         }
         if (y > 3) {
             resp.isValid = false;
-            resp.reason = `Y должен быть меньше или равен 3 (Y=${y})`;
+            resp.reason = `Y must be less than or equal to 3 (Y=${y})`;
         }
 
         return resp;
     };
 
+    // Effect to redraw points when results or R changes
     useEffect(() => {
-        const svg = document.getElementById("graph-svg");
-        if (svg) {
-            // Удаляем только точки из SVG
-            const points = svg.querySelectorAll("circle");
-            points.forEach(point => point.remove()); // Удаляем все точки
+        if (svgRef.current) {
+            const points = svgRef.current.querySelectorAll("circle");
+            points.forEach(point => point.remove()); // Remove existing points
 
-            if (results && Array.isArray(results)) {
-                results.forEach((result) => {
-                    drawPoint(result.x, result.y, result.hit);
-                });
-            }
+            results.forEach((result) => {
+                drawPoint(result.x, result.y, result.hit); // Redraw points
+            });
         }
     }, [results, r]);
 
     return (
         <div className="main__block">
             <svg
-                id="graph-svg"
+                ref={svgRef}
                 width="400"
                 height="400"
                 onClick={handleGraphClick}

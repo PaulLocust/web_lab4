@@ -15,6 +15,7 @@ interface Result {
 
 const MainPage: React.FC = () => {
     const [results, setResults] = useState<Result[]>([]); // Используем интерфейс Result для состояния
+    const [r, setR] = useState<number>(1); // Состояние для R
 
     const handleLogout = () => {
         // Логика выхода из сессии
@@ -27,8 +28,8 @@ const MainPage: React.FC = () => {
             <Header onLogout={handleLogout} showLogout={true} />
             <main className="main">
                 <div className="main__left-column">
-                    <Graph results={results} setResults={setResults} /> {/* Передаем пропсы в Graph */}
-                    <ParametersForm setResults={setResults} /> {/* Передаем setResults в ParametersForm */}
+                    <Graph results={results} setResults={setResults} r={r} /> {/* Передаем пропсы в Graph */}
+                    <ParametersForm setResults={setResults} setR={setR} /> {/* Передаем setResults и setR в ParametersForm */}
                 </div>
                 <ResultsTable results={results} /> {/* Передаем результаты в таблицу */}
             </main>
