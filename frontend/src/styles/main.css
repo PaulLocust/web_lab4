@@ -63,16 +63,7 @@ html, body {
     margin: 0 5px;
 }
 
-/* График */
-.graph {
-    display: flex;
-    height: 350px;
-    width: 350px;
-    border: 1px solid black;
-    margin: 20px auto;
-    justify-content: center;        /* Центрируем по горизонтали */
-    align-items: center;
-}
+
 
 
 /* Поля ввода */

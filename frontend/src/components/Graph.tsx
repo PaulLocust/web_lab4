@@ -1,54 +1,70 @@
 import React, { useEffect, useRef } from "react";
-import { Result } from "./ResultsTable"; // Importing the Result interface
-import { checkPoint } from "./checkPointService"; // Importing the function to check point validity
-import graphSvg from "../assets/graph.svg"; // Importing the SVG file for background
+import { Result } from "./ResultsTable";
+import { checkPoint } from "./checkPointService";
+import graphSvg from "../assets/graph.svg";
 
 interface GraphProps {
-    results: Result[]; // Array of results to display on the graph
-    setResults: React.Dispatch<React.SetStateAction<Result[]>>; // Function to update results
-    r: number; // Value of R passed as a prop
+    results: Result[];
+    setResults: React.Dispatch<React.SetStateAction<Result[]>>;
+    r: number;
 }
 
 const Graph: React.FC<GraphProps> = ({ results, setResults, r }) => {
-    const svgRef = useRef<SVGSVGElement | null>(null); // Reference for the SVG element
+    const svgRef = useRef<SVGSVGElement | null>(null);
 
-    // Function to draw a point on the graph
+    // Размеры графика и центр
+    const CENTER = 200; // Координаты центра (200, 200) в пикселях
+
+    // Функция для преобразования кликов в графические координаты
+    const pixelToGraphCoordinates = (x: number, y: number, rect: DOMRect, r: number) => {
+        // Положение клика относительно верхнего левого угла SVG
+        const clickX = x - rect.left;
+        const clickY = y - rect.top;
+
+        // Преобразуем кликовые координаты в графические относительно центра
+        const graphX = ((clickX - CENTER) / (CENTER - 30)) * r;
+        const graphY = ((CENTER - clickY) / (CENTER - 30)) * r;
+
+        return { graphX, graphY };
+    };
+
+    // Преобразуем графические координаты в пиксели
+    const graphToPixelCoordinates = (x: number, y: number, r: number) => {
+        const pixelX = (x / r) * (CENTER - 30) + CENTER;
+        const pixelY = CENTER - (y / r) * (CENTER - 30);
+
+        return { pixelX, pixelY };
+    };
+
+    // Рисуем точку
     const drawPoint = (x: number, y: number, hit: boolean) => {
         if (svgRef.current) {
             const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
-            // Transform coordinates
-            const svgWidth = 400; // Width of the graph
-            const svgHeight = 400; // Height of the graph
-            const centerX = svgWidth / 2; // Center X
-            const centerY = svgHeight / 2; // Center Y
+            // Преобразуем графические координаты в пиксельные
+            const { pixelX, pixelY } = graphToPixelCoordinates(x, y, r);
 
-            // Scale coordinates
-            const scaledX = (x / r) * (svgWidth / 2) + centerX; // Transform x
-            const scaledY = (-y / r) * (svgHeight / 2) + centerY; // Transform y, invert Y
-
-            circle.setAttribute("cx", `${scaledX}`); // Set X coordinate
-            circle.setAttribute("cy", `${scaledY}`); // Set Y coordinate
-            circle.setAttribute("r", "4"); // Set radius
-            circle.style.fill = hit ? "#0ecc14" : "#d1220f"; // Green for hit, red for miss
-            circle.style.stroke = "black"; // Stroke color
-            circle.style.strokeWidth = "1px"; // Stroke width
-            svgRef.current.appendChild(circle); // Add circle to SVG
+            circle.setAttribute("cx", `${pixelX}`);
+            circle.setAttribute("cy", `${pixelY}`);
+            circle.setAttribute("r", "4");
+            circle.style.fill = hit ? "#0ecc14" : "#d1220f";
+            circle.style.stroke = "black";
+            circle.style.strokeWidth = "1px";
+            svgRef.current.appendChild(circle);
         }
     };
 
-    // Function to handle clicks on the graph
+    // Обработка кликов
     const handleGraphClick = async (e: React.MouseEvent<SVGSVGElement>) => {
         if (svgRef.current) {
             const rect = svgRef.current.getBoundingClientRect();
-            const svgWidth = rect.width;
-            const svgHeight = rect.height;
 
-            // Calculate coordinates relative to the center of the SVG
-            const xValue = ((e.clientX - rect.left) - svgWidth / 2) / (svgWidth / 2) * r;
-            const yValue = (svgHeight / 2 - (e.clientY - rect.top)) / (svgHeight / 2) * r;
+            // Преобразуем координаты клика в графические координаты
+            const { graphX: xValue, graphY: yValue } = pixelToGraphCoordinates(e.clientX, e.clientY, rect, r);
 
-            // Validate the coordinates
+            console.log(`Click Position: (${e.clientX}, ${e.clientY})`);
+            console.log(`Calculated Graph Coordinates: (X: ${xValue}, Y: ${yValue})`);
+
             const validation = checkData(xValue, yValue, r);
             if (!validation.isValid) {
                 alert(validation.reason);
@@ -63,8 +79,8 @@ const Graph: React.FC<GraphProps> = ({ results, setResults, r }) => {
                     r,
                     hit: response.data.result,
                 };
-                setResults((prevResults) => [...prevResults, newPoint]); // Update results
-                drawPoint(xValue, yValue, response.data.result); // Draw the point
+                setResults((prevResults) => [...prevResults, newPoint]);
+                drawPoint(xValue, yValue, response.data.result);
             } catch (error) {
                 console.error("Error while sending data:", error);
             }
@@ -73,7 +89,7 @@ const Graph: React.FC<GraphProps> = ({ results, setResults, r }) => {
         }
     };
 
-    // Function to validate the data
+    // Валидация данных
     const checkData = (x: number, y: number, r: number) => {
         let resp = { isValid: true, reason: "Valid data" };
 
@@ -93,26 +109,26 @@ const Graph: React.FC<GraphProps> = ({ results, setResults, r }) => {
         return resp;
     };
 
-    // Effect to redraw points when results or R changes
+    // Перерисовка точек при изменении результатов или R
     useEffect(() => {
         if (svgRef.current) {
             const points = svgRef.current.querySelectorAll("circle");
-            points.forEach(point => point.remove()); // Remove existing points
+            points.forEach(point => point.remove()); // Удаляем существующие точки
 
             results.forEach((result) => {
-                drawPoint(result.x, result.y, result.hit); // Redraw points
+                drawPoint(result.x, result.y, result.hit); // Рисуем все точки
             });
         }
     }, [results, r]);
 
     return (
-        <div className="main__block">
+        <div className="main__block" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
             <svg
                 ref={svgRef}
                 width="400"
                 height="400"
                 onClick={handleGraphClick}
-                style={{ position: "relative", cursor: "pointer", border: "1px solid black" }}
+                style={{ cursor: "pointer", border: "1px solid black" }}
             >
                 <defs>
                     <pattern id="graph-pattern" patternUnits="userSpaceOnUse" width="400" height="400">
