@@ -1,12 +1,44 @@
-Используемый стек:
--
-- Go - основной язык
-- Gin - (backend) веб-фреймворк на Go 
-- GORM(ORM) - PostgreSQL
-- JSON Web Tokens (JWT) для защиты данных
+# Проект на Go и React
 
+## Используемый стек
 
-- React - (frontend)
-- node -v (v22.12.0) версия node.js
-- npm create vite@6.0.1 (это latest версия vite для создания шаблона React проекта)
-- React + TypeScript
+### Backend:
+- **Go** - основной язык
+- **Gin** - веб-фреймворк на Go
+- **GORM** - ORM для работы с PostgreSQL
+- **JSON Web Tokens (JWT)** - для защиты данных
+
+### Frontend:
+- **React** - библиотека для создания пользовательских интерфейсов
+- **Node.js** - версия: `v22.12.0`
+- **Vite** - версия: `6.0.1` (это последняя версия Vite для создания шаблона React проекта)
+- **React + TypeScript** - для типизации и улучшения разработки
+
+## Запуск проекта
+
+Следуйте этим шагам для запуска проекта:
+
+1. Зайдите в директорию проекта:
+   ```bash
+   cd backend/
+   ```
+
+2. Запустите backend:
+   ```bash
+   go run main.go
+   ```
+
+3. Перейдите обратно в корневую директорию:
+   ```bash
+   cd ..
+   ```
+
+4. Зайдите в директорию frontend:
+   ```bash
+   cd frontend/
+   ```
+
+5. Запустите frontend (Vite):
+   ```bash
+   npm run dev
+   ```
