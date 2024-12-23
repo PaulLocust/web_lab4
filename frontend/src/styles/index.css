@@ -67,3 +67,21 @@ th, td {
 th {
   background-color: #f0f0f0;
 }
+
+.toggle-auth {
+  margin-top: 20px; /* Отступ сверху */
+  text-align: center; /* Выравнивание текста по центру */
+}
+
+.toggle-auth button {
+  background-color: #2980b9; /* Цвет кнопки */
+  color: white; /* Цвет текста кнопки */
+  border: none; /* Без границы */
+  border-radius: 4px; /* Закругление углов */
+  padding: 10px 15px; /* Внутренние отступы */
+  cursor: pointer; /* Указатель при наведении */
+}
+
+.toggle-auth button:hover {
+  background-color: #3498db; /* Цвет кнопки при наведении */
+}

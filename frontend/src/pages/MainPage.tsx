@@ -1,38 +1,51 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
-import Graph from "../components/Graph";
+import CanvasGraph from "../components/CanvasGraph";
 import ParametersForm from "../components/ParametersForm";
-import ResultsTable from "../components/ResultsTable";
-import "../styles/main.css";
-
-// Определяем интерфейс для результата, чтобы улучшить типизацию
-interface Result {
-    x: number;
-    y: number;
-    r: number;
-    hit: boolean;
-}
+import ResultsTable, { Result } from "../components/ResultsTable";
+import Header from "../components/Header";
 
 const MainPage: React.FC = () => {
-    const [results, setResults] = useState<Result[]>([]); // Используем интерфейс Result для состояния
-    const [r, setR] = useState<number>(1); // Состояние для R
+    const [rValue, setRValue] = useState<number>(1); // Состояние для R
+    const [results, setResults] = useState<Result[]>([]); // Состояние для результатов
+
+    const handleCanvasClick = async (x: number, y: number, r: number) => {
+        try {
+            const response = await fetch("/api/check-point", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                },
+                body: JSON.stringify({ x, y, r }),
+            });
+            const data = await response.json();
+            const newResult: Result = {
+                x,
+                y,
+                r,
+                hit: data.hit, // Предполагаем, что сервер возвращает `hit` в ответе
+            };
+            setResults((prevResults) => [newResult, ...prevResults]); // Добавляем новую точку в начало
+        } catch (error) {
+            console.error("Ошибка при отправке данных:", error);
+        }
+    };
 
     const handleLogout = () => {
-        // Логика выхода из сессии
-        localStorage.removeItem("authToken"); // Удаляем токен
-        window.location.href = "/"; // Редирект на страницу входа
+        // Обработка выхода из системы
+        localStorage.removeItem("authToken");
+        window.location.href = "/";
     };
 
     return (
         <div>
             <Header onLogout={handleLogout} showLogout={true} />
-            <main className="main">
-                <div className="main__left-column">
-                    <Graph results={results} setResults={setResults} r={r} /> {/* Передаем пропсы в Graph */}
-                    <ParametersForm setResults={setResults} setR={setR} /> {/* Передаем setResults и setR в ParametersForm */}
-                </div>
-                <ResultsTable results={results} /> {/* Передаем результаты в таблицу */}
-            </main>
+            <h1>График попаданий</h1>
+            <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "20px" }}>
+                <CanvasGraph rValue={rValue} points={results} onCanvasClick={handleCanvasClick} />
+                <ParametersForm setResults={setResults} setR={setRValue} />
+            </div>
+            <ResultsTable results={results} />
         </div>
     );
 };

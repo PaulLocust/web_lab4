@@ -22,6 +22,7 @@ const HomePage: React.FC = () => {
                     ) : (
                         <SignupForm onAuthSuccess={handleAuthSuccess} />
                     )}
+                    {/* ToggleAuth размещен под формой */}
                     <ToggleAuth isLogin={isLogin} toggleAuth={() => setIsLogin(!isLogin)} />
                 </div>
             </main>

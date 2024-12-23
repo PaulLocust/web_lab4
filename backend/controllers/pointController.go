@@ -56,6 +56,9 @@ func CheckPoint(c *gin.Context) {
 
 	// Respond
 	c.JSON(http.StatusOK, gin.H{
-		"result": hitResult,
+		"x":   body.X,
+		"y":   body.Y,
+		"r":   body.R,
+		"hit": hitResult,
 	})
 }
