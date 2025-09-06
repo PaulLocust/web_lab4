@@ -18,27 +18,22 @@
 
 Следуйте этим шагам для запуска проекта:
 
-1. Зайдите в директорию проекта:
+1. Зайдите в директорию проекта и смените имя файла .env.example на .env:
    ```bash
-   cd backend/
+   mv .env.example .env
    ```
 
 2. Запустите backend:
    ```bash
-   go run main.go
+   go run backend/main.go
    ```
 
-3. Перейдите обратно в корневую директорию:
-   ```bash
-   cd ..
-   ```
-
-4. Зайдите в директорию frontend:
+4. Зайдите в директорию frontend и запустите frontend (Vite):
    ```bash
    cd frontend/
-   ```
-
-5. Запустите frontend (Vite):
-   ```bash
    npm run dev
    ```
+## Результат:
+![img.png](img.png)
+![img_1.png](img_1.png)
+

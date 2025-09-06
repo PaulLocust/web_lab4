@@ -31,7 +31,7 @@ html, body {
 /* Основная сетка */
 .main {
     display: grid;
-    grid-template-columns: 2fr 3fr; /* Левая колонка меньше правой */
+    grid-template-columns: 2fr 3fr;
     height: calc(100vh - 55px);
     width: 100vw;
 }
@@ -46,7 +46,6 @@ html, body {
     grid-template-rows: max-content max-content auto;
 }
 
-/* Блоки в левой колонке */
 .main__block {
     margin: 15px 15px 0 15px;
     border: 1px solid rgb(0, 0, 0);
@@ -63,10 +62,6 @@ html, body {
     margin: 0 5px;
 }
 
-
-
-
-/* Поля ввода */
 .input {
     height: 23px;
     margin-left: 5px;
@@ -92,7 +87,7 @@ html, body {
     background-color: #000000;
     color: #ffffff;
 }
-/* Правая колонка: таблица результатов */
+
 .result-title {
     margin: 10px auto;
     text-align: center;
@@ -116,7 +111,6 @@ html, body {
     box-shadow: 1px 1px 1px #000;
 }
 
-/* Цвета попадания */
 .hit {
     color: green;
 }
@@ -125,3 +119,21 @@ html, body {
     color: red;
 }
 
+/* Адаптивные стили */
+@media (min-width: 1209px) {
+    .main {
+        grid-template-columns: 3fr 2fr;
+    }
+}
+
+@media (min-width: 700px) and (max-width: 1208px) {
+    .main {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 699px) {
+    .main {
+        grid-template-columns: 1fr;
+    }
+}

@@ -56,3 +56,27 @@
     background-color: #3498db;
 }
 
+/* Адаптивные стили */
+@media (min-width: 1209px) {
+    .form-container {
+        max-width: 600px;
+    }
+}
+
+@media (min-width: 700px) and (max-width: 1208px) {
+    .form-container {
+        max-width: 500px;
+    }
+}
+
+@media (max-width: 699px) {
+    .form-container {
+        max-width: 300px;
+        padding: 10px;
+    }
+
+    .submit-button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}

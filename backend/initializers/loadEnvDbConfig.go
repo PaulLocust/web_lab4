@@ -16,7 +16,7 @@ type Config struct {
 }
 
 func LoadEnvDbConfig() *Config {
-	// Загрузка переменных окружения из файла .env
+	// Загрузка переменных окружения из файла .env.example
 
 	port, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
